@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Post an event · Garnet Board</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <aside class="sidebar">
+      <a class="brand" href="index.html">
+        Garnet Board
+        <span>Union College</span>
+      </a>
+
+      <nav aria-label="Sections">
+        <a href="index.html#around">Around Union</a>
+        <a href="index.html#menus">Menus</a>
+        <a href="index.html#hours">Hours</a>
+        <a href="index.html#events">Events</a>
+        <a href="post.html" class="is-current" aria-current="page">Post an event</a>
+      </nav>
+
+      <p class="clock" id="today" aria-live="polite"></p>
+    </aside>
+
+    <main>
+      <section aria-labelledby="post-heading">
+        <h2 id="post-heading">Post an event</h2>
+        <p class="lead">Your event shows up on the dashboard as soon as it is saved.</p>
+
+        <form id="event-form" novalidate>
+          <label>
+            Title
+            <input name="title" type="text" maxlength="120" required />
+            <span class="field-error" data-error-for="title"></span>
+          </label>
+
+          <label>
+            Type
+            <select name="category">
+              <option value="event">Event</option>
+              <option value="meeting">Meeting or practice</option>
+              <option value="signup">Sign up</option>
+            </select>
+            <span class="field-error" data-error-for="category"></span>
+          </label>
+
+          <div class="field-row">
+            <label>
+              Date
+              <input name="date" type="date" required />
+            </label>
+            <label>
+              Starts
+              <input name="startTime" type="time" required />
+            </label>
+            <label>
+              Ends <span class="optional">(optional)</span>
+              <input name="endTime" type="time" />
+            </label>
+          </div>
+          <span class="field-error" data-error-for="start"></span>
+          <span class="field-error" data-error-for="end"></span>
+
+          <label>
+            Location
+            <input name="location" type="text" maxlength="120" required />
+            <span class="field-error" data-error-for="location"></span>
+          </label>
+
+          <label>
+            Hosted by
+            <input name="organizer" type="text" maxlength="120" required />
+            <span class="field-error" data-error-for="organizer"></span>
+          </label>
+
+          <label>
+            Link <span class="optional">(optional)</span>
+            <input name="link" type="url" maxlength="300" placeholder="https://" />
+            <span class="field-error" data-error-for="link"></span>
+          </label>
+
+          <label>
+            Description <span class="optional">(optional)</span>
+            <textarea name="description" rows="4" maxlength="600"></textarea>
+            <span class="field-error" data-error-for="description"></span>
+          </label>
+
+          <div class="form-actions">
+            <button type="submit" class="submit">Post event</button>
+            <a href="index.html#events">Back to the dashboard</a>
+          </div>
+          <p class="form-message" id="form-message" role="status"></p>
+        </form>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
