@@ -1,35 +1,31 @@
-// Garnet Board's server: connects to MongoDB, serves the website and the
-// API, and keeps the data fresh by running the importers.
+// Runs Garnet Board on your own computer.
+//
+//   npm run dev     while working: the API here on port 3000, and the React
+//                   app on port 5173 (open that one), which reloads as you edit
+//   npm start       the finished site: run `npm run build` first, then open
+//                   port 3000
+//
+// Vercel doesn't use this file; it uses api/index.js.
 
-require('dotenv').config({ quiet: true });
-
+const path = require('path');
 const express = require('express');
-const mongoose = require('mongoose');
-const apiRoutes = require('./routes/api');
+const app = require('./app');
+const connectToDatabase = require('./lib/db');
 const { startImporters } = require('./importers');
 
-const PORT = process.env.PORT || 3000;
-const app = express();
+const PORT = 3000; // vite.config.mjs sends /api requests here
+const WEBSITE = path.join(__dirname, 'dist'); // made by `npm run build`
 
-app.use(express.json()); // read JSON sent by the "Post an event" form
-app.use(express.static('public')); // the website itself
-app.use('/api', apiRoutes); // the data the website asks for
-
-// Errors end up here. A 400 means the request itself was bad (for example,
-// JSON that can't be read). Anything else is a problem on our side: log it.
-app.use((error, req, res, next) => {
-  if (error.status === 400) {
-    return res.status(400).json({ error: 'The request could not be read.' });
-  }
-  console.error(error);
-  res.status(500).json({ error: 'Something went wrong on the server.' });
-});
+// Serve the built React app. Any address that isn't a file (like /post)
+// gets index.html, and React shows the right page.
+app.use(express.static(WEBSITE));
+app.get('/{*page}', (req, res) => res.sendFile(path.join(WEBSITE, 'index.html')));
 
 async function start() {
-  await mongoose.connect(process.env.MONGODB_URI);
+  await connectToDatabase();
   console.log('Connected to MongoDB.');
 
-  app.listen(PORT, () => console.log(`Garnet Board is running at http://localhost:${PORT}`));
+  app.listen(PORT, () => console.log(`Garnet Board's server is running on port ${PORT}`));
   startImporters();
 }
 

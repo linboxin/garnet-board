@@ -1,0 +1,122 @@
+/* Two columns side by side on wide screens, one on top of the other on
+   phones. */
+.hours-columns {
+  display: grid;
+  gap: 20px 40px;
+}
+
+@media (min-width: 700px) {
+  .hours-columns {
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+  }
+}
+
+.hours-column {
+  display: grid;
+  gap: 20px;
+}
+
+/* ---------- one place ---------- */
+
+.place {
+  border-bottom: 1px solid var(--line);
+}
+
+.place summary {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding: 6px 4px;
+  cursor: pointer;
+  list-style: none; /* hide the browser's own triangle */
+}
+
+.place summary::-webkit-details-marker {
+  display: none;
+}
+
+.place summary:hover {
+  background: var(--hover);
+}
+
+/* A small arrow that turns when the row is open. */
+.place summary::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-right: 2px solid var(--muted);
+  border-bottom: 2px solid var(--muted);
+  transform: rotate(-45deg);
+  transition: transform 0.15s;
+}
+
+.place[open] summary::before {
+  transform: rotate(45deg);
+}
+
+.place .name {
+  flex: 1;
+}
+
+/* "Open until 8:00 PM", with a coloured dot in front. */
+.status {
+  font-size: 0.92rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.status::before {
+  content: '';
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-right: 7px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.status.open {
+  color: var(--open);
+}
+
+.status.soon {
+  color: var(--soon);
+}
+
+.status.closed {
+  color: var(--muted);
+}
+
+/* ---------- inside an opened place ---------- */
+
+.place-body {
+  padding: 0 4px 10px 22px;
+  font-size: 0.9rem;
+}
+
+.place-body p {
+  margin: 0 0 8px;
+  color: var(--muted);
+}
+
+/* The week, as two columns: day and hours. */
+.week {
+  margin: 0 0 6px;
+  color: var(--muted);
+}
+
+.week div {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+}
+
+.week dt,
+.week dd {
+  margin: 0;
+}
+
+.week .today {
+  color: var(--ink);
+  font-weight: 600;
+}

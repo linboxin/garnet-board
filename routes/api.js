@@ -7,6 +7,7 @@ const Menu = require('../models/Menu');
 const Event = require('../models/Event');
 const News = require('../models/News');
 const { ZONE, campusNow, getStatus, weekSchedule } = require('../lib/hours');
+const { runDueImporters } = require('../importers');
 
 const router = express.Router();
 
@@ -99,6 +100,19 @@ router.post('/events', async (req, res) => {
     }
     res.status(400).json({ error: 'Please fix the highlighted fields.', fields });
   }
+});
+
+// GET /api/import — runs any importers that are due.
+// On Vercel a daily cron job calls this (see vercel.json). Vercel sends the
+// CRON_SECRET with the request; without it, the request is refused, so a
+// random visitor can't start imports.
+router.get('/import', async (req, res) => {
+  const secret = process.env.CRON_SECRET;
+  if (!secret || req.headers.authorization !== `Bearer ${secret}`) {
+    return res.status(401).json({ error: 'Not allowed.' });
+  }
+  const results = await runDueImporters();
+  res.json({ results });
 });
 
 module.exports = router;

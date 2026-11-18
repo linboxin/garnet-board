@@ -1,0 +1,91 @@
+.lead {
+  margin: 0 0 16px;
+  color: var(--muted);
+}
+
+.event-form {
+  display: grid;
+  gap: 12px;
+  max-width: 560px;
+}
+
+.event-form label {
+  display: block;
+  font-size: 0.88rem;
+  font-weight: 500;
+}
+
+.optional {
+  font-weight: 400;
+  color: var(--muted);
+}
+
+.event-form input,
+.event-form select,
+.event-form textarea {
+  display: block;
+  width: 100%;
+  margin-top: 4px;
+  border: 1px solid #cdc6c7;
+  border-radius: 4px;
+  padding: 8px 10px;
+  font: inherit;
+  font-weight: 400;
+}
+
+.event-form input:focus,
+.event-form select:focus,
+.event-form textarea:focus {
+  outline: 2px solid var(--garnet);
+  outline-offset: 1px;
+}
+
+/* Date, start time and end time side by side. */
+.field-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+.field-error {
+  display: block;
+  margin-top: 2px;
+  color: var(--error);
+  font-size: 0.82rem;
+  font-weight: 400;
+}
+
+.form-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.form-actions button {
+  border: 0;
+  border-radius: 4px;
+  padding: 9px 18px;
+  background: var(--garnet);
+  color: #fff;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.form-actions button:hover {
+  background: var(--garnet-dark);
+}
+
+.form-actions button:disabled {
+  opacity: 0.6;
+}
+
+.form-ok {
+  margin: 0;
+  color: var(--open);
+}
+
+.form-bad {
+  margin: 0;
+  color: var(--error);
+}

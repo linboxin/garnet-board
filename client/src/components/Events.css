@@ -1,0 +1,11 @@
+.day + .day {
+  margin-top: 20px;
+}
+
+/* "Sign ups", "Events", "Meetings & practices" under each day. */
+.group-title {
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 400;
+}

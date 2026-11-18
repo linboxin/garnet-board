@@ -1,0 +1,62 @@
+.meal-picker {
+  margin: 6px 0 12px;
+}
+
+.meal-picker button {
+  font-size: 0.85rem;
+}
+
+.meal-time {
+  margin: 0 0 8px;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+/* Stations flow into as many columns as fit (each at least 220px wide). */
+.stations {
+  columns: 3 220px;
+  column-gap: 32px;
+}
+
+.station {
+  break-inside: avoid; /* keep a station in one column */
+  padding-bottom: 14px;
+}
+
+.station h4 {
+  margin: 0 0 2px;
+  font-size: 0.95rem;
+}
+
+.dishes {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.dishes li {
+  padding: 3px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 0.92rem;
+}
+
+.diet {
+  margin-left: 8px;
+  color: var(--open);
+  font-size: 0.82rem;
+}
+
+/* A button that looks like a link ("12 more"). */
+.link-button {
+  border: 0;
+  padding: 4px 0 0;
+  background: none;
+  color: var(--garnet);
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.link-button:hover {
+  text-decoration: underline;
+}

@@ -3,66 +3,105 @@
 A student dashboard for Union College: campus news, dining menus, what's open
 right now, and events, on one page. CSC 240 final project (backend track).
 
-**Stack:** Node.js and Express, MongoDB Atlas (through Mongoose), and a plain
-HTML, CSS and JavaScript front end.
+**Stack:** a React front end (built with Vite), a Node.js and Express API,
+and MongoDB Atlas (through Mongoose). Hosted on Vercel.
 
 ## How it works
 
 ```
-Union websites ──► importers ──► MongoDB ──► API ──► the page
+Union websites ──► importers ──► MongoDB ──► Express API ──► React page
                                     ▲
                    "Post an event" form
 ```
 
-1. **Importers** fetch data from Union's websites every few hours and save it
-   to MongoDB.
-2. The **API** reads from MongoDB and answers the page's requests.
-3. The **page** asks the API for data and draws it.
+1. **Importers** fetch data from Union's websites and save it to MongoDB.
+2. The **API** (`/api/...`) reads from MongoDB and answers the page.
+3. The **React app** asks the API for data and draws it.
 
-The page never talks to Union's sites directly, so it stays fast and keeps
-working when one of them is down.
+## Run it on your computer
 
-## Run it
+1. Copy `.env.example` to `.env` and paste in your Atlas connection string as
+   `MONGODB_URI`. In Atlas, your current IP address must be allowed under
+   **Network Access**.
+2. Install and start:
 
-```bash
-npm install
-npm start
-```
+   ```bash
+   npm install
+   npm run dev
+   ```
 
-Then open http://localhost:3000.
+3. Open http://localhost:5173.
 
-The server needs a MongoDB connection string. Copy `.env.example` to `.env`
-and paste your Atlas connection string in as `MONGODB_URI`. In Atlas, your
-current IP address must be allowed under **Network Access**.
+`npm run dev` starts two things at once:
+- **the API** on port 3000 (`server.js`), which also runs the importers on a
+  schedule;
+- **the React app** on port 5173 (Vite). It reloads as soon as you save a
+  file, and sends `/api` requests to port 3000.
 
-On its first start the server runs every importer, which takes about a minute.
+## Put it on Vercel
+
+Vercel builds the React app into plain files and runs the API as a
+"serverless function" (`api/index.js`). The settings are in `vercel.json`.
+
+1. **Atlas → Network Access → Add IP Address → Allow access from anywhere**
+   (`0.0.0.0/0`). Vercel's servers don't have fixed addresses.
+2. **Vercel → your project → Settings → Environment Variables**, add:
+   - `MONGODB_URI`: the same connection string as in your `.env`
+   - `CRON_SECRET`: any long random text
+3. Push to GitHub. Vercel builds and deploys `main` on its own.
+
+**Imports on Vercel:** there is no always-running server, so a Vercel
+"cron job" calls `/api/import` once a day (at 10:00 UTC, about 5 AM on
+campus), which runs whatever importers are due. That's the most often the
+free plan allows. To refresh sooner, run `npm run import` on your computer:
+it writes to the same database.
 
 ## The files
 
 ```
-server.js              starts everything: database, website, API, importers
-routes/api.js          the API endpoints
-lib/hours.js           opening hours: reading them as text, and "is it open now?"
+client/                    the React app
+  index.html                 the page React draws into
+  src/main.jsx               starts React
+  src/App.jsx                layout: sidebar plus the current page
+  src/styles.css             colours and styles shared by every part
+  src/useApi.js              loads data from the API (and reloads it)
+  src/time.js                dates and times in campus time
+  src/components/            one file per part of the page, each with its .css
+    Sidebar.jsx  News.jsx  Menus.jsx  Hours.jsx  Events.jsx
+  src/pages/
+    Dashboard.jsx            the main page: loads the data, shows the sections
+    PostEvent.jsx            the "Post an event" form
 
-models/                what each kind of document looks like in MongoDB
-  Location.js            a café, library or office, with its weekly hours
-  Menu.js                one meal at one café today
-  Event.js               one event
-  News.js                one news story
-  ImportRun.js           when each importer last ran
+app.js                     the Express app (the API)
+server.js                  runs the API on your computer
+api/index.js               runs the API on Vercel
+routes/api.js              the API endpoints
+lib/hours.js               opening hours: reading them, and "is it open now?"
+lib/db.js                  connects to MongoDB
 
-importers/             fetch data from Union's websites into MongoDB
-  index.js               the schedule: which importer runs how often
-  news.js                news stories from union.edu
-  events.js              events from U-Engage
-  dining.js              café hours and menus from Bon Appétit
-  hours.js               office hours from union.edu
-  officePages.js         the list of office pages hours.js reads
-  fetch.js               helpers for downloading pages
-  run.js                 run importers by hand
+models/                    what each kind of document looks like in MongoDB
+  Location.js  Menu.js  Event.js  News.js  ImportRun.js
 
-public/                the website: index.html, post.html, styles.css, app.js
+importers/                 fetch data from Union's websites into MongoDB
+  index.js                   which importer runs how often
+  news.js                    news stories from union.edu
+  events.js                  events from U-Engage
+  dining.js                  café hours and menus from Bon Appétit
+  hours.js                   office hours from union.edu
+  officePages.js             the list of office pages hours.js reads
+  fetch.js                   helpers for downloading pages
+  run.js                     run importers by hand
+
+vite.config.mjs            settings for Vite
+vercel.json                settings for Vercel
 ```
+
+## Editing the look
+
+- **Colours** are at the top of `client/src/styles.css`. Change `--garnet` and
+  every garnet thing on the site changes.
+- **Each part of the page** has its own `.jsx` file (what's shown) and `.css`
+  file (how it looks) in `client/src/components/`.
 
 ## The importers
 
@@ -73,17 +112,14 @@ public/                the website: index.html, post.html, styles.css, app.js
 | `dining` | each café's page on union.cafebonappetit.com | 3 hours | `locations`, `menus` |
 | `hours` | 34 office pages on union.edu | 7 days | `locations` |
 
-Every 15 minutes the server checks which importers are due and runs them. If
-one fails (a site is down, a page changed), the error is logged and the old
-data stays.
-
-To run them by hand:
+These are the schedules on your computer. On Vercel they all run once a day
+(see above). To run them by hand:
 
 ```bash
 npm run import
 ```
 
-Or just one of them, for example `npm run import news`.
+Or just one, for example `npm run import news`.
 
 HTML pages are read with [cheerio](https://cheerio.js.org/), which finds parts
 of a page with CSS selectors. Dates and times use
@@ -92,13 +128,12 @@ of a page with CSS selectors. Dates and times use
 Notes:
 
 - The dining site's `robots.txt` asks automated programs not to fetch it. The
-  dining importer makes 8 requests every 3 hours, one at a time with a pause.
+  dining importer makes 8 requests per run, one at a time with a pause.
 - The U-Engage feed includes organizers' names and emails. They are not saved.
 - Schaffer Library and the Writing Center describe their hours in a paragraph,
   so their term hours are typed in by hand in `importers/officePages.js`.
-- Dining hours come from each café's weekly schedule. One-off changes (a
-  holiday, a break) appear as a note under the café, and a café serving
-  nothing today shows as "Closed today".
+- One-off dining changes (a holiday, a break) appear as a note under the café,
+  and a café serving nothing today shows as "Closed today".
 
 ## The API
 
@@ -109,15 +144,13 @@ Notes:
 | GET | `/api/locations` | Every place, with its hours and whether it is open now |
 | GET | `/api/events` | Events from today through the next week |
 | POST | `/api/events` | Saves an event from the form |
+| GET | `/api/import` | Runs due importers; needs the `CRON_SECRET` (used by Vercel's cron job) |
 
 `POST /api/events` takes JSON with `title`, `category` (`event`, `meeting` or
 `signup`), `date`, `startTime`, `endTime`, `location`, `organizer`, `link` and
 `description`. If a field breaks a rule in `models/Event.js`, it answers `400`
 with a message for each field; otherwise `201` with the saved event.
 
-## Open or closed
-
 "Open until 8:00 PM" is never stored. `getStatus()` in `lib/hours.js` works it
 out on each request from the place's weekly hours and the current time on
-campus (not the server's or the visitor's time zone). It handles places that
-close after midnight and meals that run back to back.
+campus.

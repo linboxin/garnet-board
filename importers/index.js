@@ -1,4 +1,4 @@
-// Runs the importers on a schedule while the server is up.
+// Runs the importers on a schedule.
 //
 // Each importer is one function that fetches data from a Union website and
 // saves it to MongoDB. The list below says how often each should run.
@@ -28,26 +28,34 @@ async function runImporter(importer) {
       { name: importer.name, finishedAt: new Date() },
       { upsert: true }
     );
-    console.log(`Imported ${importer.name}: ${summary}`);
+    const result = `Imported ${importer.name}: ${summary}`;
+    console.log(result);
+    return result;
   } catch (error) {
-    console.error(`Import of ${importer.name} failed: ${error.message}`);
+    const result = `Import of ${importer.name} failed: ${error.message}`;
+    console.error(result);
+    return result;
   }
 }
 
-// Runs every importer whose data is older than its `everyHours`.
+// Runs every importer whose data is older than its `everyHours`, and
+// returns a line about each one that ran.
 async function runDueImporters() {
+  const results = [];
   for (const importer of IMPORTERS) {
     const lastRun = await ImportRun.findOne({ name: importer.name });
     const isDue = !lastRun || Date.now() - lastRun.finishedAt > importer.everyHours * HOUR;
-    if (isDue) await runImporter(importer);
+    if (isDue) results.push(await runImporter(importer));
   }
+  return results;
 }
 
-// Called once when the server starts: import anything that's due now, then
-// check again every 15 minutes.
+// Used when running the server on your own computer: import anything that's
+// due now, then check again every 15 minutes. (On Vercel there is no
+// always-running server, so a daily "cron job" calls /api/import instead.)
 function startImporters() {
   runDueImporters();
   setInterval(runDueImporters, 15 * 60 * 1000);
 }
 
-module.exports = { IMPORTERS, runImporter, startImporters };
+module.exports = { IMPORTERS, runImporter, runDueImporters, startImporters };

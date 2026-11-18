@@ -1,0 +1,171 @@
+/* Styles shared by the whole site. Each component has its own .css file
+   next to it for the styles only it uses. */
+
+/* The site's colours. Change one here and it changes everywhere. */
+:root {
+  --garnet: #822433; /* Union garnet */
+  --garnet-dark: #651a27;
+  --ink: #1d1a1a; /* main text */
+  --muted: #6d6667; /* secondary text */
+  --line: #e5e0e0; /* thin dividers */
+  --hover: #faf5f6;
+  --open: #1c7c44; /* green: open */
+  --soon: #a15c00; /* amber: closing soon */
+  --error: #b3261e;
+  --sidebar-width: 200px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: #fff;
+  color: var(--ink);
+  font: 16px/1.5 system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+a {
+  color: var(--garnet);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* ---------- page layout ---------- */
+
+main {
+  padding: 20px 16px 32px;
+  max-width: 960px;
+}
+
+@media (min-width: 900px) {
+  main {
+    margin-left: var(--sidebar-width);
+    padding: 24px 32px 40px;
+  }
+}
+
+section {
+  margin-bottom: 32px;
+  scroll-margin-top: 24px;
+}
+
+h2 {
+  margin: 0 0 8px;
+  color: var(--garnet);
+  font-size: 1.35rem;
+}
+
+h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+/* A heading with a link on the right, like "Events ... Post an event". */
+.heading-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.heading-row h2 {
+  margin: 0;
+}
+
+.heading-row a {
+  font-size: 0.9rem;
+}
+
+footer {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+/* ---------- used in several sections ---------- */
+
+.muted {
+  color: var(--muted);
+}
+
+/* A list of rows separated by thin lines (news, events). */
+.rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.rows > li {
+  padding: 6px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+/* A row with a date or time on the left and details on the right. */
+@media (min-width: 620px) {
+  .timed-row {
+    display: grid;
+    grid-template-columns: 150px minmax(0, 1fr);
+    column-gap: 16px;
+    align-items: baseline;
+  }
+}
+
+.time {
+  display: block; /* on its own line on phones */
+  color: var(--muted);
+  font-size: 0.92rem;
+  white-space: nowrap;
+}
+
+/* A smaller grey line under a title. */
+.sub {
+  display: block;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.name {
+  font-weight: 500;
+}
+
+/* A line of text links under a section. */
+.more {
+  margin: 12px 0 0;
+  font-size: 0.9rem;
+}
+
+/* A row of buttons where one is selected (used for cafés and meals). */
+.picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.picker button {
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 3px 10px;
+  background: #fff;
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.picker button:hover {
+  border-color: var(--garnet);
+}
+
+.picker button.selected {
+  background: var(--garnet);
+  border-color: var(--garnet);
+  color: #fff;
+}
